@@ -1,5 +1,7 @@
 import {Text, View, TextInput, Button} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type FormValues = {
   firstName: string;
   lastName: string;
@@ -15,7 +17,9 @@ export default function MyForm() {
       lastName: '',
     },
   });
-  const onSubmit = (data: FormValues) => console.log(data);
+  const onSubmit = async (data: FormValues) => {
+    await AsyncStorage.setItem('my-key', data?.firstName);
+  };
 
   return (
     <View>

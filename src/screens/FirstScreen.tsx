@@ -1,38 +1,66 @@
-import {Appearance, Button, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect} from 'react';
-import {useTheme} from '../hooks/DarkMode/Dartheme';
-import appSlice, {Theme} from '../redux/slices/app.slice';
-import {useDispatch} from 'react-redux';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import MyForm from '../components/form/form';
+import React, {useCallback, useMemo, useRef} from 'react';
+import {View, Text, StyleSheet, Button} from 'react-native';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
-const FirstScreen = () => {
-  const {theme, changeTheme} = useTheme();
-  const dispatch = useDispatch();
-  const handleAppearanceChange = () => {
-    const colorScheme: Theme = Appearance.getColorScheme() ?? 'light';
-    dispatch(appSlice.actions.setTheme(colorScheme));
-  };
-  useEffect(() => {
-    const subscription = Appearance.addChangeListener(handleAppearanceChange);
-    return () => {
-      subscription.remove();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import GhostButton from '../components/Buttons/ghostButton/GhostButton';
+const App = () => {
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
   }, []);
-
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+  const handleButtonPress = () => {
+    console.log('Ghost button pressed!');
+  };
+  // renders
   return (
-    <View style={[styles.container, theme.backgroundColor]}>
+    <GestureHandlerRootView style={{backgroundColor: 'red', flex: 1}}>
       <BottomSheetModalProvider>
-        <Button title="Press me" onPress={() => changeTheme('dark')} />
-        <Text>FirstScreen</Text>
-        <MyForm />
+        <View style={styles.container}>
+          <Button
+            onPress={handlePresentModalPress}
+            title="Present Modal"
+            color="black"
+          />
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}>
+            <View style={styles.contentContainer}>
+              <Text>Awesome </Text>
+            </View>
+          </BottomSheetModal>
+          <View
+            style={{backgroundColor: 'green', width: '100%', height: '20%'}}>
+            <GhostButton title="Press Me" onPress={handleButtonPress} />
+          </View>
+        </View>
       </BottomSheetModalProvider>
-    </View>
+    </GestureHandlerRootView>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
 });
 
-export default FirstScreen;
+export default App;
