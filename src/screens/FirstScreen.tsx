@@ -5,13 +5,10 @@ import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import GhostButton from '../components/Buttons/ghostButton/GhostButton';
 const App = () => {
-  // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  // variables
   const snapPoints = useMemo(() => ['25%', '50%'], []);
 
-  // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
